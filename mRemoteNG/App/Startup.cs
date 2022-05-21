@@ -3,9 +3,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Threading;
 using mRemoteNG.App.Info;
 using mRemoteNG.App.Initialization;
 using mRemoteNG.App.Update;
+using mRemoteNG.App.Listener;
 using mRemoteNG.Config.Connections.Multiuser;
 using mRemoteNG.Connection;
 using mRemoteNG.Messages;
@@ -43,16 +45,37 @@ namespace mRemoteNG.App
             startupLogger.LogStartupData();
             CompatibilityChecker.CheckCompatibility(messageCollector);
             ParseCommandLineArgs(messageCollector);
+            MakeAdjustmentsForBuildMode();
             IeBrowserEmulation.Register();
             _connectionIconLoader.GetConnectionIcons();
             DefaultConnectionInfo.Instance.LoadFrom(Settings.Default, a => "ConDefault" + a);
             DefaultConnectionInheritance.Instance.LoadFrom(Settings.Default, a => "InhDefault" + a);
+            StartListenerService();
         }
 
         private static void ParseCommandLineArgs(MessageCollector messageCollector)
         {
             var interpreter = new StartupArgumentsInterpreter(messageCollector);
             interpreter.ParseArguments(Environment.GetCommandLineArgs());
+        }
+
+        private static void MakeAdjustmentsForBuildMode()
+        {
+#if DEBUG
+            Properties.OptionsUpdatesPage.Default.CheckForUpdatesAsked = true;
+#else        
+# endif
+        }
+
+        private static void StartListenerService()
+        {
+            Thread listenerThread = new Thread(() =>
+            {
+                var socketServer = new Server(8080);
+                socketServer.InitServer();
+            });
+            listenerThread.SetApartmentState(ApartmentState.STA);
+            listenerThread.Start();
         }
 
         public void CreateConnectionsProvider(MessageCollector messageCollector)
