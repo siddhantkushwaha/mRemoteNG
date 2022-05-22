@@ -38,12 +38,13 @@ namespace mRemoteNG.App
             Rectangle viewport = targetScreen.WorkingArea;
             frmSplashScreen.Top = viewport.Top;
             frmSplashScreen.Left = viewport.Left;
+
             // normaly it should be screens[1] however due DPI apply 1 size "same" as default with 100%
-                frmSplashScreen.Left = viewport.Left + (targetScreen.Bounds.Size.Width / 2) - (frmSplashScreen.Width / 2);
-                frmSplashScreen.Top = viewport.Top + (targetScreen.Bounds.Size.Height / 2) - (frmSplashScreen.Height / 2);
+            frmSplashScreen.Top = viewport.Top + (targetScreen.Bounds.Size.Height / 2) - (1.5 * frmSplashScreen.Height);
+            frmSplashScreen.Left = viewport.Left + (targetScreen.Bounds.Size.Width / 2) - (frmSplashScreen.Width);
             
             frmSplashScreen.Show();
-            
+
             System.Windows.Forms.Application.Run(FrmMain.Default);
         }
 
