@@ -196,6 +196,9 @@ namespace mRemoteNG.UI.Controls
                     return;
                 }
 
+                // redirect clipboard by default
+                connectionInfo.RedirectClipboard = true;
+
                 _cmbQuickConnect.Add(connectionInfo);
                 Runtime.ConnectionInitiator.OpenConnection(connectionInfo, ConnectionInfo.Force.DoNotJump);
             }
